@@ -7,7 +7,9 @@ module testbench
    glip_channel.master fifo_out
    );
 
+   /* Modules->Ring */
    dii_channel in_ports [1:0];
+   /* Ring->Modules */
    dii_channel out_ports [1:0];   
 
    osd_him
@@ -15,7 +17,7 @@ module testbench
            .glip_in  (fifo_in),
            .glip_out (fifo_out),
            .dii_out  (out_ports[0]),
-           .dii_in   (in_ports[1]));
+           .dii_in   (in_ports[0]));
 
    debug_ring
      #(.PORTS(2))
