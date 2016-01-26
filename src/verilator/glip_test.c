@@ -23,7 +23,8 @@ int main() {
     packet[2] = 0x0;
     packet[3] = 0xabcd;
 
-    glip_write_b(gctx, 0, 4, (uint8_t*) packet, &size_written, 1*1000);
+    glip_write_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+    glip_write_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
 
     sleep(1);
 
