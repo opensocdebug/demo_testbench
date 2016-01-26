@@ -12,6 +12,9 @@ module testbench
    /* Ring->Modules */
    dii_channel out_ports [1:0];   
 
+   assign in_ports[1].ready = 1;
+   assign out_ports[1].valid = 0;
+
    osd_him
      u_him(.*,
            .glip_in  (fifo_in),
