@@ -22,8 +22,9 @@ module testbench
            .dii_in   (in_ports[0]));
 
    osd_scm
-     #(.VENDORID(8'h0), .SYSTEMID(8'h0), .NUM_MOD(N-1))
+     #(.SYSTEMID(16'hdead), .NUM_MOD(N-1))
    u_scm(.*,
+         .id (1),
          .debug_in  (in_ports[1]),
          .debug_out (out_ports[1]));
 

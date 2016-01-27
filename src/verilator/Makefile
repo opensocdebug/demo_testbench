@@ -10,7 +10,6 @@ srcs_verilog = testbench_verilator.sv \
            ${GLIP}/src/common/logic/interface/glip_channel.sv \
            ../testbench.sv \
            ${HARDWARE}/interfaces/verilog/dii_channel.sv \
-           ${HARDWARE}/interfaces/verilog/dii_channel_flat.sv \
            ${HARDWARE}/modules/him/verilog/osd_him.sv \
            ${HARDWARE}/interconnect/verilog/debug_ring.sv \
            ${HARDWARE}/interconnect/verilog/ring_router.sv \
@@ -18,6 +17,7 @@ srcs_verilog = testbench_verilator.sv \
            ${HARDWARE}/interconnect/verilog/ring_router_mux.sv \
            ${HARDWARE}/interconnect/verilog/ring_router_mux_rr.sv \
            ${HARDWARE}/blocks/buffer/verilog/dii_buffer.sv \
+           ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv
 
