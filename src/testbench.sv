@@ -38,22 +38,27 @@ module testbench
              .in_valid  (),
              .in_ready  (1));
 
-   dii_channel_flat #(.N(N)) in_flat;
-   dii_channel_flat #(.N(N)) out_flat;
+   dii_channel #(.N(N)) dii_in;
+   dii_channel #(.N(N)) dii_out;
 
    genvar i;
    generate
-      for (i = 0; i < N; i = i + 1) begin
-         assign out_flat.data[(i+1)*16-1:i*16] = out_ports[i].data;
-         assign out_flat.first[i] = out_ports[i].first;
-         assign out_flat.last[i]  = out_ports[i].last;
-         assign out_flat.valid[i] = out_ports[i].valid;
-         assign out_ports[i].ready = out_flat.ready[i];
-         assign in_ports[i].data = in_flat.data[(i+1)*16-1:i*16];
-         assign in_ports[i].first = in_flat.first[i];
-         assign in_ports[i].last = in_flat.last[i];
-         assign in_ports[i].valid = in_flat.valid[i];
-         assign in_flat.ready[i] = in_ports[i].ready;
+      for (i = 0; i < N; i++) begin
+         assign out_ports[i].ready = dii_out.assemble(out_ports[i].data,
+                                                      out_ports[i].first,
+                                                      out_ports[i].last,
+                                                      out_ports[i].valid,
+                                                      i);
+         // here is a bug for Verilator,it cannot recognize in_port[i] as an interface
+         //assign dii_in.ready[i] = in_ports[i].assemble(dii_in.data[i],
+         //                                              dii_in.first[i],
+         //                                              dii_in.last[i],
+         //                                              dii_in.valid[i]);
+         assign in_ports[i].data = dii_in.data[i];
+         assign in_ports[i].first = dii_in.first[i];
+         assign in_ports[i].last = dii_in.last[i];
+         assign in_ports[i].valid = dii_in.valid[i];
+         assign dii_in.ready[i] = in_ports[i].ready;
       end
    endgenerate
 
@@ -61,7 +66,7 @@ module testbench
    debug_ring
      #(.PORTS(N))
    u_ring(.*,
-          .in_flat  (out_flat),
-          .out_flat (in_flat));
+          .dii_in  (dii_out),
+          .dii_out (dii_in));
 
 endmodule // testbench
