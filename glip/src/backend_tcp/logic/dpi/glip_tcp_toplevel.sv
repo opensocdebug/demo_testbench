@@ -38,13 +38,13 @@ module glip_tcp_toplevel
     glip_channel.slave     fifo_in,
 
     // GLIP Control Interface
-    output                 logic_rst,
-    output                 com_rst
+    output reg             logic_rst,
+    output reg             com_rst
     );
 
    import "DPI-C" function
-     chandle glip_tcp_create(input integer tcp_port,
-                             input integer width);
+     chandle glip_tcp_create(input int tcp_port,
+                             input int width);
 
    import "DPI-C" function
      int glip_tcp_reset(input chandle obj);
@@ -65,7 +65,7 @@ module glip_tcp_toplevel
      void glip_tcp_read_ack(input chandle obj);
 
    import "DPI-C" function
-     void glip_tcp_write(input chandle obj, longint data);
+     void glip_tcp_write(input chandle obj, input longint unsigned data);
    
    chandle obj;
 
@@ -78,9 +78,9 @@ module glip_tcp_toplevel
          logic_rst = 0;
          com_rst = 0;           
       end else begin
-         int connected;
-         int unsigned state;
-         longint data;
+         automatic int connected;
+         automatic int unsigned state;
+         automatic longint data;
 
          connected = glip_tcp_connected(obj);
          if (connected > 0) begin
@@ -93,7 +93,7 @@ module glip_tcp_toplevel
 
          // Get control message
          if ((state & STATE_MASK_CTRL) != 0) begin
-            int data = glip_tcp_control_msg(obj);
+            automatic int data = glip_tcp_control_msg(obj);
             logic_rst = data[0];
          end else begin
             logic_rst = 1'b0;
@@ -101,7 +101,7 @@ module glip_tcp_toplevel
 
          // We have new incoming data
          if ((state & STATE_MASK_READ) != 0) begin
-            longint data = glip_tcp_read(obj);
+            automatic longint data = glip_tcp_read(obj);
             fifo_in.data = data[WIDTH-1:0];
             fifo_in.valid = 1;
          end else begin
@@ -122,11 +122,13 @@ module glip_tcp_toplevel
          glip_tcp_read_ack(obj);
       end
       if (fifo_out.valid & fifo_out.ready) begin
-         longint data = 0;
+         automatic longint data = 0;
          data[WIDTH-1:0] = fifo_out.data;
          glip_tcp_write(obj, data);
       end
    end
+
+   int port_int;
    
    initial begin
       obj = glip_tcp_create(PORT, WIDTH);

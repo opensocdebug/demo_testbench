@@ -1,5 +1,5 @@
 
-module testbench_verilator
+module testbench_top
   (input clk, rst);
 
    localparam WIDTH = 16;
@@ -19,7 +19,7 @@ module testbench_verilator
           .fifo_in   (fifo_in),
           .fifo_out  (fifo_out));
 
-   assign logic_rst = rst;
+   //assign logic_rst = rst;
    
    testbench
      u_tb(.*,

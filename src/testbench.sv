@@ -10,9 +10,9 @@ module testbench
    localparam N = 3;
 
    /* Modules->Ring */
-   dii_channel in_ports [N-1:0];
+   dii_channel in_ports [N-1:0] ();
    /* Ring->Modules */
-   dii_channel out_ports [N-1:0];   
+   dii_channel out_ports [N-1:0] ();   
 
    osd_him
      u_him(.*,
@@ -24,7 +24,7 @@ module testbench
    osd_scm
      #(.SYSTEMID(16'hdead), .NUM_MOD(N-1))
    u_scm(.*,
-         .id (1),
+         .id (10'd1),
          .debug_in  (in_ports[1]),
          .debug_out (out_ports[1]));
 
@@ -33,14 +33,14 @@ module testbench
              .debug_in  (in_ports[2]),
              .debug_out (out_ports[2]),
              .out_char  ('x),
-             .out_valid (0),
+             .out_valid ('0),
              .out_ready (),
              .in_char   (),
              .in_valid  (),
-             .in_ready  (1));
+             .in_ready  ('1));
 
-   dii_channel #(.N(N)) dii_in;
-   dii_channel #(.N(N)) dii_out;
+   dii_channel #(.N(N)) dii_in ();
+   dii_channel #(.N(N)) dii_out ();
 
    genvar i;
    generate

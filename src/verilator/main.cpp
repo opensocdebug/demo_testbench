@@ -17,7 +17,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#include "obj_dir/Vtestbench_verilator.h"
+#include "obj_dir/Vtestbench_top.h"
 
 #include "GlipTcp.h"
 
@@ -40,7 +40,7 @@ int main(int argc, char** argv) {
     }
 
 
-    Vtestbench_verilator *top = new Vtestbench_verilator();
+    Vtestbench_top *top = new Vtestbench_top();
     top->rst = 1;
     top->eval();
 
