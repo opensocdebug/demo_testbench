@@ -28,14 +28,51 @@ module testbench
          .debug_in  (in_ports[1]),
          .debug_out (out_ports[1]));
 
+   logic [7:0] uart_char;
+   logic       uart_valid;
+   logic       uart_ready;
+   reg [4:0]   counter;
+
+   always_ff @(posedge clk) begin
+      if (rst) begin
+         counter <= 0;
+      end else begin
+         if (uart_ready & (counter < 14)) begin
+            counter <= counter + 1;
+         end
+      end
+   end
+
+   always_comb @(*) begin
+      uart_valid = 1;
+      uart_char = 'x;
+      
+      case (counter)
+        0: uart_char = 8'h48;
+        1: uart_char = 8'h65;
+        2: uart_char = 8'h6c;
+        3: uart_char = 8'h6c;
+        4: uart_char = 8'h6f;
+        5: uart_char = 8'h20;
+        6: uart_char = 8'h57;
+        7: uart_char = 8'h6f;
+        8: uart_char = 8'h72;
+        9: uart_char = 8'h6c;
+        10: uart_char = 8'h64;
+        11: uart_char = 8'h21;
+        12: uart_char = 8'h0a;
+        default: uart_valid = 0;        
+      endcase // case (counter)
+   end
+   
    osd_dem_uart
      u_uart (.*,
              .id (10'd2),
              .debug_in  (in_ports[2]),
              .debug_out (out_ports[2]),
-             .out_char  ('x),
-             .out_valid ('0),
-             .out_ready (),
+             .out_char  (uart_char),
+             .out_valid (uart_valid),
+             .out_ready (uart_ready),
              .in_char   (),
              .in_valid  (),
              .in_ready  ('1));
