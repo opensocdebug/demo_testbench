@@ -30,7 +30,7 @@ flags = -CFLAGS "-I${GLIP}/src/backend_tcp/logic/dpi -std=c++11 -g" -LDFLAGS "-p
 all: demo glip_test
 
 glip_test: glip_test.c
-	$(CC) -o glip_test -I${GLIP}/include glip_test.c ${GLIP_LIBS}
+	$(CC) -std=c99 -o glip_test -I${GLIP}/include glip_test.c ${GLIP_LIBS}
 
 demo: obj_dir/Vtestbench_top.mk Makefile
 	make -C obj_dir -f Vtestbench_top.mk

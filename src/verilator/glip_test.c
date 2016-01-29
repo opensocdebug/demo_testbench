@@ -32,8 +32,13 @@ int main() {
     assert(packet[1] == 0);
     assert(packet[2] == 1);
 
-    printf("Found module type 0x%04x\n", packet[3]);
-
+    if (packet[3] != 1) {
+      printf("Expected SCM at index 1, but not found\n");
+      exit(-1);
+    } else {
+      printf("Found SCM\n");
+    }
+    
     packet[0] = 3;
     packet[1] = 0x1;
     packet[2] = (0x2 << 12) | 0x0;
@@ -47,10 +52,67 @@ int main() {
     assert(packet[1] == 0);
     assert(packet[2] == 1);
 
-    printf("  module version 0x%04x\n", packet[3]);
+    printf("  SCM version 0x%04x\n", packet[3]);
+    
+    packet[0] = 3;
+    packet[1] = 0x1;    
+    packet[2] = (0x2 << 12) | 0x0;
+    packet[3] = 0x200;
 
-    sleep(1);
+    glip_write_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
 
+    glip_read_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+    assert(size_written == 8);
+    assert(packet[0] == 3);
+    assert(packet[1] == 0);
+    assert(packet[2] == 1);
+
+    if (packet[3] != 0xdead) {
+      printf("Expected system ID 0xdead, found %04x\n", packet[3]);
+      exit(-1);
+    } else {
+      printf("Found system ID 0xdead\n");
+    }
+
+    packet[0] = 3;
+    packet[1] = 0x1;    
+    packet[2] = (0x2 << 12) | 0x0;
+    packet[3] = 0x201;
+
+    glip_write_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+
+    glip_read_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+    assert(size_written == 8);
+    assert(packet[0] == 3);
+    assert(packet[1] == 0);
+    assert(packet[2] == 1);
+
+    printf("SCM says there are %d modules, enumerate:\n", packet[3]);
+
+    printf(" [1] SCM\n");
+
+    for (int i = 2; i <= packet[3]; i++) {
+      packet[0] = 3;
+      packet[1] = i;
+      packet[2] = (0x2 << 12) | 0x0;
+      packet[3] = 0;
+      
+      glip_write_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+      
+      glip_read_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+      assert(size_written == 8);
+      assert(packet[0] == 3);
+      assert(packet[1] == 0);
+      assert(packet[2] == i);
+      
+      printf(" [%d] ", i);
+      if (packet[3] == 0x2) {
+	printf("DEM_UART\n");
+      } else {
+	printf("unknown\n");
+      }
+    }
+    
     /* close the connection to the target */
     glip_close(gctx);
     /* free all resources */
