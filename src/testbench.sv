@@ -46,10 +46,7 @@ module testbench
    genvar i;
    generate
       for (i = 0; i < N; i++) begin
-         assign out_ports[i].ready = dii_out.assemble(out_ports[i].data,
-                                                      out_ports[i].last,
-                                                      out_ports[i].valid,
-                                                      i);
+         assign out_ports[i].ready = dii_out.assemble({out_ports[i].valid,out_ports[i].last,out_ports[i].data}, i);
          // here is a bug for Verilator,it cannot recognize in_port[i] as an interface
          //assign dii_in.ready[i] = in_ports[i].assemble(dii_in.data[i],
          //                                              dii_in.last[i],

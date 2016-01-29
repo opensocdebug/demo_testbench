@@ -43,7 +43,7 @@ flags = \
 all: demo glip_test
 
 glip_test: ../glip_test.c
-	$(CC) -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
+	$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
 xsim.dir/xsim.svtype: $(srcs_verilog)
 	xvlog -sv $^
