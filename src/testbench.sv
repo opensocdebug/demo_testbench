@@ -30,6 +30,7 @@ module testbench
 
    osd_dem_uart
      u_uart (.*,
+             .id (10'd2),
              .debug_in  (in_ports[2]),
              .debug_out (out_ports[2]),
              .out_char  ('x),
