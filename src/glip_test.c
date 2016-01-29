@@ -138,7 +138,13 @@ int main() {
     assert(packet[2] == (1 << 11) | uart_id);
     
     while (1) {
-      
+      glip_read_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 0);
+      assert(size_written == 8);
+      assert(packet[0] == 3);
+      assert(packet[1] == 0);
+      assert(packet[2] == 0x8002);
+
+      printf("%c", (packet[3] & 0xff)); 
     }
     
     /* close the connection to the target */
