@@ -91,6 +91,8 @@ int main() {
 
     printf(" [1] SCM\n");
 
+    uint16_t uart_id = 0;
+    
     for (int i = 2; i <= packet[3]; i++) {
       packet[0] = 3;
       packet[1] = i;
@@ -108,9 +110,35 @@ int main() {
       printf(" [%d] ", i);
       if (packet[3] == 0x2) {
 	printf("DEM_UART\n");
+	uart_id = i;
       } else {
 	printf("unknown\n");
       }
+    }
+
+    if (uart_id == 0) {
+	printf("No UART found.\n");
+	exit (-1);
+    }
+      
+    printf("Ready. Enable UART\n");
+
+    packet[0] = 4;
+    packet[1] = uart_id;    
+    packet[2] = (0x3 << 12) | 0x1 << 10 | 0x0;
+    packet[3] = 0x3;
+    packet[4] = 0x1 << 11 | 0x0;
+
+    glip_write_b(gctx, 0, 10, (uint8_t*) packet, &size_written, 1*1000);
+
+    glip_read_b(gctx, 0, 6, (uint8_t*) packet, &size_written, 1*1000);
+    assert(size_written == 6);
+    assert(packet[0] == 2);
+    assert(packet[1] == 0);
+    assert(packet[2] == (1 << 11) | uart_id);
+    
+    while (1) {
+      
     }
     
     /* close the connection to the target */
