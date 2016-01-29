@@ -17,7 +17,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
-#include "obj_dir/Vtestbench_top.h"
+#include "Vtestbench_top.h"
 
 #include "GlipTcp.h"
 

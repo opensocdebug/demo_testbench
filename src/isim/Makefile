@@ -31,7 +31,7 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
-           main.sv
+           ../main.sv
 
 srcs_cxx = ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/GlipTcp.cpp
@@ -42,15 +42,15 @@ flags = \
 
 all: demo glip_test
 
-glip_test: glip_test.c
-	$(CC) -o glip_test -I${GLIP}/include glip_test.c ${GLIP_LIBS}
+glip_test: ../glip_test.c
+	$(CC) -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
 xsim.dir/xsim.svtype: $(srcs_verilog)
-	xvlog -sv $(srcs_verilog)
+	xvlog -sv $^
 
 xsim.dir/xsc/dpi.so: $(srcs_cxx)
 	-mkdir -p xsim.dir/xsc
-	g++ $(flags) $(srcs_cxx) $(XILINX_VIVADO)/lib/lnx64.o/librdi_simulator_kernel.so -o $@
+	g++ $(flags) $^ $(XILINX_VIVADO)/lib/lnx64.o/librdi_simulator_kernel.so -o $@
 
 demo: xsim.dir/demo/xsimk
 xsim.dir/demo/xsimk: xsim.dir/xsim.svtype xsim.dir/xsc/dpi.so

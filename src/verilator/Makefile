@@ -21,7 +21,7 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv
 
-srcs_cxx = main.cpp \
+srcs_cxx = ../main.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/GlipTcp.cpp
 
@@ -29,8 +29,8 @@ flags = -CFLAGS "-I${GLIP}/src/backend_tcp/logic/dpi -std=c++11 -g" -LDFLAGS "-p
 
 all: demo glip_test
 
-glip_test: glip_test.c
-	$(CC) -o glip_test -I${GLIP}/include glip_test.c ${GLIP_LIBS}
+glip_test: ../glip_test.c
+	$(CC) -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
 demo: obj_dir/Vtestbench_top.mk Makefile
 	make -C obj_dir -f Vtestbench_top.mk
