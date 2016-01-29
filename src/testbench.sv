@@ -43,7 +43,7 @@ module testbench
       end
    end
 
-   always_comb @(*) begin
+   always_comb begin
       uart_valid = 1;
       uart_char = 'x;
       
@@ -83,7 +83,11 @@ module testbench
    genvar i;
    generate
       for (i = 0; i < N; i++) begin
-         assign out_ports[i].ready = dii_out.assemble({out_ports[i].valid,out_ports[i].last,out_ports[i].data}, i);
+         //assign out_ports[i].ready = dii_out.assemble({out_ports[i].valid,out_ports[i].last,out_ports[i].data}, i);
+         assign out_ports[i].ready = dii_out.ready[i];
+         assign dii_out.data[i] = out_ports[i].data;
+         assign dii_out.valid[i] = out_ports[i].valid;
+         assign dii_out.last[i] = out_ports[i].last;
          // here is a bug for Verilator,it cannot recognize in_port[i] as an interface
          //assign dii_in.ready[i] = in_ports[i].assemble(dii_in.data[i],
          //                                              dii_in.last[i],
