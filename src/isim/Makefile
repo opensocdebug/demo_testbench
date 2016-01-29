@@ -54,7 +54,7 @@ xsim.dir/xsc/dpi.so: $(srcs_cxx)
 
 demo: xsim.dir/demo/xsimk
 xsim.dir/demo/xsimk: xsim.dir/xsim.svtype xsim.dir/xsc/dpi.so
-	xelab -timescale 1ns/100ps work.main --snapshot demo -cc gcc -sv_lib dpi
+	xelab -timescale 1ns/100ps work.main --snapshot demo -cc gcc -sv_lib dpi -debug all
 
 sim: xsim.dir/demo/xsimk
 	xsim demo
