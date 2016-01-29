@@ -9,13 +9,12 @@ module main;
 
    initial begin
       rst = 1'b1;
-      #15;
+      #50;
       rst = 1'b0;
    end
 
    initial begin
       clk = 0;
-      #10;
       forever #5 clk = !clk;
    end
 
