@@ -19,7 +19,9 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/blocks/buffer/verilog/dii_buffer.sv \
            ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
-           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_nasti.sv \
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_16550.sv
 
 srcs_cxx = ../main.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
@@ -30,14 +32,15 @@ flags = -CFLAGS "-I${GLIP}/src/backend_tcp/logic/dpi -std=c++11 -g" -LDFLAGS "-p
 all: demo glip_test
 
 glip_test: ../glip_test.c
-	$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
+		$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
 demo: obj_dir/Vtestbench_top.mk Makefile
-	make -C obj_dir -f Vtestbench_top.mk
+		make -C obj_dir -f Vtestbench_top.mk
 
 obj_dir/Vtestbench_top.mk: $(srcs_verilog) $(srcs_cxx) Makefile
-	$(VERILATOR) --cc $(srcs_verilog) $(srcs_cxx) $(flags) -o ../demo
-	touch obj_dir/Vtestbench_top.mk
+		$(VERILATOR) --cc $(srcs_verilog) $(srcs_cxx) $(flags) -o ../demo
+		touch obj_dir/Vtestbench_top.mk
 
 clean:
-	rm -rf demo obj_dir glip_test
+		rm -rf demo obj_dir glip_test
+
