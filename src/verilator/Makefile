@@ -8,7 +8,6 @@ GLIP_LIBS=$(shell pkg-config --libs libglip)
 srcs_verilog = ../testbench_top.sv \
            ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_toplevel.sv \
            ${GLIP}/src/common/logic/interface/glip_channel.sv \
-           ../testbench.sv \
            ${HARDWARE}/interfaces/verilog/dii_channel.sv \
            ${HARDWARE}/modules/him/verilog/osd_him.sv \
            ${HARDWARE}/interconnect/verilog/debug_ring.sv \
@@ -19,7 +18,8 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/blocks/buffer/verilog/dii_buffer.sv \
            ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
-           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
+           ../testbench.sv \
 
 srcs_cxx = ../main.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \

@@ -9,27 +9,27 @@ module testbench
 
    localparam N = 3;
 
-   /* Modules->Ring */
-   dii_channel him_dii_in(), scm_dii_in(), uart_dii_in(),
-     dummy_in3(), dummy_in4(), dummy_in5(), dummy_in6(), dummy_in7();
-   /* Ring->Modules */
-   dii_channel him_dii_out(), scm_dii_out(), uart_dii_out(),
-     dummy_out3(), dummy_out4(), dummy_out5(), dummy_out6(), dummy_out7();
+   dii_flit [N-1:0] dii_out; logic [N-1:0] dii_out_ready;
+   dii_flit [N-1:0] dii_in; logic [N-1:0] dii_in_ready;   
 
    osd_him
      u_him(.*,
-           .glip_in  ( fifo_in     ),
-           .glip_out ( fifo_out    ),
-           .dii_out  ( him_dii_out ),
-           .dii_in   ( him_dii_in  )
+           .glip_in        ( fifo_in           ),
+           .glip_out       ( fifo_out          ),
+           .dii_out        ( dii_out[0]        ),
+           .dii_out_ready  ( dii_out_ready[0]  ),
+           .dii_in         ( dii_in[0]         ),
+           .dii_in_ready   ( dii_in_ready[0]   )
            );
 
    osd_scm
      #(.SYSTEMID(16'hdead), .NUM_MOD(N-1))
    u_scm(.*,
-         .id        ( 10'd1       ),
-         .debug_in  ( scm_dii_in  ),
-         .debug_out ( scm_dii_out )
+         .id              ( 10'd1            ),
+         .debug_in        ( dii_in[1]        ),
+         .debug_in_ready  ( dii_in_ready[1]  ),
+         .debug_out       ( dii_out[1]       ),
+         .debug_out_ready ( dii_out_ready[1] )
          );
 
    logic [7:0] uart_char;
@@ -71,38 +71,26 @@ module testbench
    
    osd_dem_uart
      u_uart (.*,
-             .id        ( 10'd2        ),
-             .debug_in  ( uart_dii_in  ),
-             .debug_out ( uart_dii_out ),
-             .out_char  ( uart_char    ),
-             .out_valid ( uart_valid   ),
-             .out_ready ( uart_ready   ),
-             .in_char   (              ),
-             .in_valid  (              ),
-             .in_ready  ( '1           )
+             .id              ( 10'd2            ),
+             .debug_in        ( dii_in[2]        ),
+             .debug_in_ready  ( dii_in_ready[2]  ),
+             .debug_out       ( dii_out[2]       ),
+             .debug_out_ready ( dii_out_ready[2] ),
+             .out_char        ( uart_char        ),
+             .out_valid       ( uart_valid       ),
+             .out_ready       ( uart_ready       ),
+             .in_char         (                  ),
+             .in_valid        (                  ),
+             .in_ready        ( '1               )
              );
-
-   dii_channel #(.N(N)) dii_in ();
-   dii_channel #(.N(N)) dii_out ();
-
-   dii_combiner #(N)
-   combiner(
-            him_dii_out, scm_dii_out, uart_dii_out,
-            dummy_out3, dummy_out4, dummy_out5, dummy_out6, dummy_out7,
-            dii_out
-            );
-
-   dii_divider #(N)
-   divider (
-            dii_in,
-            him_dii_in, scm_dii_in, uart_dii_in,
-            dummy_in3, dummy_in4, dummy_in5, dummy_in6, dummy_in7
-            );
 
    debug_ring
      #(.PORTS(N))
    u_ring(.*,
-          .dii_in  (dii_out),
-          .dii_out (dii_in));
+          .dii_in        ( dii_out       ),
+          .dii_in_ready  ( dii_out_ready ),
+          .dii_out       ( dii_in        ),
+          .dii_out_ready ( dii_in_ready  )
+          );
 
 endmodule // testbench
