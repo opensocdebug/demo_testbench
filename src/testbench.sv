@@ -51,38 +51,68 @@ module testbench
       if (rst) begin
          counter <= 0;
       end else begin
-         if (w_ready & (counter < 14)) begin
+         if ((w_valid & w_ready) |
+             (ar_valid & ar_ready)) begin
             counter <= counter + 1;
          end
       end
    end
 
    assign aw_valid = w_valid;
-   assign aw_addr = 0;
    assign b_ready = 1;
    
-   assign ar_valid = 0;
-   assign ar_addr = 'x;
-   assign r_ready = 0;
+   assign r_ready = 1;
    
-   always_comb @(*) begin
+   always @(*) begin
       w_valid = 1;
+      ar_valid = 0;
+      aw_addr = 0;
       w_data = 'x;
+      ar_addr = 'x;
       
       case (counter)
-        0: w_data = 8'h48;
-        1: w_data = 8'h65;
-        2: w_data = 8'h6c;
-        3: w_data = 8'h6c;
-        4: w_data = 8'h6f;
-        5: w_data = 8'h20;
-        6: w_data = 8'h57;
-        7: w_data = 8'h6f;
-        8: w_data = 8'h72;
+        // Test Divisor write
+        0: begin
+           w_data = 8'h80;
+           aw_addr = 3;
+        end
+        1: begin
+           w_data = 8'hde;
+           aw_addr = 0;
+        end
+        2: begin
+           w_data = 8'had;
+           aw_addr = 0;
+        end
+        3: begin
+           w_data = 8'h00;
+           aw_addr = 3;
+        end
+        // Test THRE read
+        4: begin
+           w_valid = 0;
+           ar_valid = 1;
+           ar_addr = 5;
+        end     
+        5: w_data = 8'h48;
+        // Test THRE read
+        6: begin
+           w_valid = 0;
+           ar_valid = 1;
+           ar_addr = 5;
+        end     
+        7: w_data = 8'h65;
+        8: w_data = 8'h6c;
         9: w_data = 8'h6c;
-        10: w_data = 8'h64;
-        11: w_data = 8'h21;
-        12: w_data = 8'h0a;
+        10: w_data = 8'h6f;
+        11: w_data = 8'h20;
+        12: w_data = 8'h57;
+        13: w_data = 8'h6f;
+        14: w_data = 8'h72;
+        15: w_data = 8'h6c;
+        16: w_data = 8'h64;
+        17: w_data = 8'h21;
+        18: w_data = 8'h0a;
         default: w_valid = 0;        
       endcase // case (counter)
    end
