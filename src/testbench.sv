@@ -32,56 +32,102 @@ module testbench
          .debug_out_ready ( dii_out_ready[1] )
          );
 
-   logic [7:0] uart_char;
-   logic       uart_valid;
-   logic       uart_ready;
+   logic [2:0] ar_addr;
+   logic       ar_valid;
+   logic       ar_ready;
+   logic [1:0] r_resp;
+   logic [7:0] r_data;
+   logic       r_valid;
+   logic       r_ready;
+   logic [2:0] aw_addr;
+   logic       aw_valid;
+   logic       aw_ready;
+   logic [7:0] w_data;
+   logic       w_valid;
+   logic       w_ready;
+   logic [1:0] b_resp;
+   logic       b_valid;
+   logic       b_ready;
+   
    reg [4:0]   counter;
 
    always_ff @(posedge clk) begin
       if (rst) begin
          counter <= 0;
       end else begin
-         if (uart_ready & (counter < 14)) begin
+         if ((w_valid & w_ready) |
+             (ar_valid & ar_ready)) begin
             counter <= counter + 1;
          end
       end
    end
 
-   always_comb begin
-      uart_valid = 1;
-      uart_char = 'x;
+   assign aw_valid = w_valid;
+   assign b_ready = 1;
+   
+   assign r_ready = 1;
+   
+   always @(*) begin
+      w_valid = 1;
+      ar_valid = 0;
+      aw_addr = 0;
+      w_data = 'x;
+      ar_addr = 'x;
       
       case (counter)
-        0: uart_char = 8'h48;
-        1: uart_char = 8'h65;
-        2: uart_char = 8'h6c;
-        3: uart_char = 8'h6c;
-        4: uart_char = 8'h6f;
-        5: uart_char = 8'h20;
-        6: uart_char = 8'h57;
-        7: uart_char = 8'h6f;
-        8: uart_char = 8'h72;
-        9: uart_char = 8'h6c;
-        10: uart_char = 8'h64;
-        11: uart_char = 8'h21;
-        12: uart_char = 8'h0a;
-        default: uart_valid = 0;        
+        // Test Divisor write
+        0: begin
+           w_data = 8'h80;
+           aw_addr = 3;
+        end
+        1: begin
+           w_data = 8'hde;
+           aw_addr = 0;
+        end
+        2: begin
+           w_data = 8'had;
+           aw_addr = 0;
+        end
+        3: begin
+           w_data = 8'h00;
+           aw_addr = 3;
+        end
+        // Test THRE read
+        4: begin
+           w_valid = 0;
+           ar_valid = 1;
+           ar_addr = 5;
+        end     
+        5: w_data = 8'h48;
+        // Test THRE read
+        6: begin
+           w_valid = 0;
+           ar_valid = 1;
+           ar_addr = 5;
+        end     
+        7: w_data = 8'h65;
+        8: w_data = 8'h6c;
+        9: w_data = 8'h6c;
+        10: w_data = 8'h6f;
+        11: w_data = 8'h20;
+        12: w_data = 8'h57;
+        13: w_data = 8'h6f;
+        14: w_data = 8'h72;
+        15: w_data = 8'h6c;
+        16: w_data = 8'h64;
+        17: w_data = 8'h21;
+        18: w_data = 8'h0a;
+        default: w_valid = 0;        
       endcase // case (counter)
    end
    
-   osd_dem_uart
+   osd_dem_uart_nasti
      u_uart (.*,
              .id              ( 10'd2            ),
              .debug_in        ( dii_in[2]        ),
              .debug_in_ready  ( dii_in_ready[2]  ),
              .debug_out       ( dii_out[2]       ),
-             .debug_out_ready ( dii_out_ready[2] ),
-             .out_char        ( uart_char        ),
-             .out_valid       ( uart_valid       ),
-             .out_ready       ( uart_ready       ),
-             .in_char         (                  ),
-             .in_valid        (                  ),
-             .in_ready        ( '1               )
+             .debug_out_ready ( dii_out_ready[2] )
              );
 
    debug_ring

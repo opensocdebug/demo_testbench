@@ -26,6 +26,8 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_nasti.sv \
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_16550.sv \
            ../testbench.sv \
            ../main.sv
 
