@@ -44,6 +44,8 @@ set files [list \
                [file normalize $HARDWARE/blocks/statctrlif/verilog/osd_statctrlif.sv] \
                [file normalize $HARDWARE/modules/scm/verilog/osd_scm.sv] \
                [file normalize $HARDWARE/modules/dem_uart/verilog/osd_dem_uart.sv] \
+               [file normalize $HARDWARE/modules/dem_uart/verilog/osd_dem_uart_nasti.sv] \
+               [file normalize $HARDWARE/modules/dem_uart/verilog/osd_dem_uart_16550.sv] \
 ]
 add_files -norecurse -fileset [get_filesets sources_1] $files
 

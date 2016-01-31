@@ -31,6 +31,8 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_nasti.sv \
+           ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_16550.sv \
            ../main.sv
 
 srcs_cxx = ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
@@ -43,7 +45,7 @@ flags = \
 all: demo glip_test
 
 glip_test: ../glip_test.c
-	$(CC) -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
+	$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
 xsim.dir/xsim.svtype: $(srcs_verilog)
 	xvlog -sv $^
