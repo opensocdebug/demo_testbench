@@ -1,8 +1,4 @@
 
-ifndef XILINX_VIVADO
-$(error Please set environment variable XILINX_VIVADO for Xilinx tools)
-endif
-
 ifndef HARDWARE
 $(error Please set environment variable HARDWARE to the path of OpenSoCDebug/hardware)
 endif
@@ -39,29 +35,20 @@ srcs_cxx = ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/GlipTcp.cpp
 
 flags = \
-	-I${GLIP}/src/backend_tcp/logic/dpi -I$(XILINX_VIVADO)/data/xsim/include \
-	-Wa,-W -fPIC -m64 -std=c++11 -shared -g -pthread
+	-I${GLIP}/src/backend_tcp/logic/dpi -Wa,-W -fPIC -m64 -std=c++11 -shared -g -pthread
 
 all: demo glip_test
 
 glip_test: ../glip_test.c
 	$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
-xsim.dir/xsim.svtype: $(srcs_verilog)
-	xvlog -sv $^
+dpi.so: $(srcs_cxx)
+	g++ $(flags) $^ -o $@
 
-xsim.dir/xsc/dpi.so: $(srcs_cxx)
-	-mkdir -p xsim.dir/xsc
-	g++ $(flags) $^ $(XILINX_VIVADO)/lib/lnx64.o/librdi_simulator_kernel.so -o $@
-
-demo: xsim.dir/demo/xsimk
-xsim.dir/demo/xsimk: xsim.dir/xsim.svtype xsim.dir/xsc/dpi.so
-	xelab -timescale 1ns/100ps work.main --snapshot demo -cc gcc -sv_lib dpi -debug all
-
-sim: xsim.dir/demo/xsimk
-	xsim demo
+demo: $(srcs_verilog) dpi.so
+	vcs -sverilog -full64 -timescale=1ns/100ps -debug_all -o $@ $^
 
 clean:
-	rm -rf demo glip_test xsim.dir
+	rm -rf demo glip_test dpi.so
 
-.PHONY: demo all clean sim
+.PHONY: demo all clean

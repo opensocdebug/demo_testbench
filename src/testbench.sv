@@ -10,23 +10,27 @@ module testbench
    localparam N = 3;
 
    /* Modules->Ring */
-   dii_channel in_ports [N-1:0] ();
+   dii_channel him_dii_in(), scm_dii_in(), uart_dii_in(),
+     dummy_in3(), dummy_in4(), dummy_in5(), dummy_in6(), dummy_in7();
    /* Ring->Modules */
-   dii_channel out_ports [N-1:0] ();   
+   dii_channel him_dii_out(), scm_dii_out(), uart_dii_out(),
+     dummy_out3(), dummy_out4(), dummy_out5(), dummy_out6(), dummy_out7();
 
    osd_him
      u_him(.*,
-           .glip_in  (fifo_in),
-           .glip_out (fifo_out),
-           .dii_out  (out_ports[0]),
-           .dii_in   (in_ports[0]));
+           .glip_in  ( fifo_in     ),
+           .glip_out ( fifo_out    ),
+           .dii_out  ( him_dii_out ),
+           .dii_in   ( him_dii_in  )
+           );
 
    osd_scm
      #(.SYSTEMID(16'hdead), .NUM_MOD(N-1))
    u_scm(.*,
-         .id (10'd1),
-         .debug_in  (in_ports[1]),
-         .debug_out (out_ports[1]));
+         .id        ( 10'd1       ),
+         .debug_in  ( scm_dii_in  ),
+         .debug_out ( scm_dii_out )
+         );
 
    logic [7:0] uart_char;
    logic       uart_valid;
@@ -67,38 +71,33 @@ module testbench
    
    osd_dem_uart
      u_uart (.*,
-             .id (10'd2),
-             .debug_in  (in_ports[2]),
-             .debug_out (out_ports[2]),
-             .out_char  (uart_char),
-             .out_valid (uart_valid),
-             .out_ready (uart_ready),
-             .in_char   (),
-             .in_valid  (),
-             .in_ready  ('1));
+             .id        ( 10'd2        ),
+             .debug_in  ( uart_dii_in  ),
+             .debug_out ( uart_dii_out ),
+             .out_char  ( uart_char    ),
+             .out_valid ( uart_valid   ),
+             .out_ready ( uart_ready   ),
+             .in_char   (              ),
+             .in_valid  (              ),
+             .in_ready  ( '1           )
+             );
 
    dii_channel #(.N(N)) dii_in ();
    dii_channel #(.N(N)) dii_out ();
 
-   genvar i;
-   generate
-      for (i = 0; i < N; i++) begin
-         //assign out_ports[i].ready = dii_out.assemble({out_ports[i].valid,out_ports[i].last,out_ports[i].data}, i);
-         assign out_ports[i].ready = dii_out.ready[i];
-         assign dii_out.data[i] = out_ports[i].data;
-         assign dii_out.valid[i] = out_ports[i].valid;
-         assign dii_out.last[i] = out_ports[i].last;
-         // here is a bug for Verilator,it cannot recognize in_port[i] as an interface
-         //assign dii_in.ready[i] = in_ports[i].assemble(dii_in.data[i],
-         //                                              dii_in.last[i],
-         //                                              dii_in.valid[i]);
-         assign in_ports[i].data = dii_in.data[i];
-         assign in_ports[i].last = dii_in.last[i];
-         assign in_ports[i].valid = dii_in.valid[i];
-         assign dii_in.ready[i] = in_ports[i].ready;
-      end
-   endgenerate
+   dii_combiner #(N)
+   combiner(
+            him_dii_out, scm_dii_out, uart_dii_out,
+            dummy_out3, dummy_out4, dummy_out5, dummy_out6, dummy_out7,
+            dii_out
+            );
 
+   dii_divider #(N)
+   divider (
+            dii_in,
+            him_dii_in, scm_dii_in, uart_dii_in,
+            dummy_in3, dummy_in4, dummy_in5, dummy_in6, dummy_in7
+            );
 
    debug_ring
      #(.PORTS(N))
