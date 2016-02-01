@@ -1,7 +1,14 @@
 
-VERILATOR ?= verilator
+ifndef HARDWARE
+$(error Please set environment variable HARDWARE to the path of OpenSoCDebug/hardware)
+endif
+
+ifndef TOP
+$(error Please set environment variable TOP to the path of OpenSoCDebug/demo_testbench)
+endif
+
 GLIP ?= ${TOP}/glip
-HARDWARE ?= ${TOP}/osd-hardware
+#HARDWARE ?= ${TOP}/osd-hardware
 
 GLIP_LIBS=$(shell pkg-config --libs libglip)
 
@@ -22,25 +29,26 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_nasti.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_16550.sv \
            ../testbench.sv \
+           ../main.sv
 
-srcs_cxx = ../main.cpp \
-           ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
+srcs_cxx = ${GLIP}/src/backend_tcp/logic/dpi/glip_tcp_dpi.cpp \
            ${GLIP}/src/backend_tcp/logic/dpi/GlipTcp.cpp
 
-flags = -CFLAGS "-I${GLIP}/src/backend_tcp/logic/dpi -std=c++11 -g" -LDFLAGS "-pthread" --exe --trace --sv --unroll-count 256 --Wno-fatal
+flags = \
+	-I${GLIP}/src/backend_tcp/logic/dpi -Wa,-W -fPIC -m64 -std=c++11 -shared -g -pthread
 
 all: demo glip_test
 
 glip_test: ../glip_test.c
-		$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
+	$(CC) -std=c99 -o $@ -I${GLIP}/include $^ ${GLIP_LIBS}
 
-demo: obj_dir/Vtestbench_top.mk Makefile
-		make -C obj_dir -f Vtestbench_top.mk
+dpi.so: $(srcs_cxx)
+	g++ $(flags) $^ -o $@
 
-obj_dir/Vtestbench_top.mk: $(srcs_verilog) $(srcs_cxx) Makefile
-		$(VERILATOR) --cc $(srcs_verilog) $(srcs_cxx) $(flags) -o ../demo
-		touch obj_dir/Vtestbench_top.mk
+demo: $(srcs_verilog) dpi.so
+	vcs -sverilog -full64 -timescale=1ns/100ps -debug_all -o $@ $^
 
 clean:
-		rm -rf demo obj_dir glip_test
+	rm -rf demo glip_test dpi.so
 
+.PHONY: demo all clean
