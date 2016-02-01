@@ -34,8 +34,8 @@ module glip_tcp_toplevel
     input                  rst,
 
     // GLIP FIFO Interface
-    glip_channel.slave     fifo_out,
-    glip_channel.master    fifo_in,
+    glip_channel.master    fifo_out,
+    glip_channel.slave     fifo_in,
 
     // GLIP Control Interface
     output reg             logic_rst,
