@@ -1,4 +1,6 @@
 
+import dii_package::dii_flit;
+
 module testbench
   (
    input clk, rst,
