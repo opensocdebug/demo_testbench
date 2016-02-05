@@ -32,7 +32,8 @@ int main() {
 
     glip_write_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
 
-    glip_read_b(gctx, 0, 8, (uint8_t*) packet, &size_written, 1*1000);
+    glip_read_b(gctx, 0, 12, (uint8_t*) packet, &size_written, 1*1000);
+
     assert(size_written == 8);
     assert(packet[0] == 3);
     assert(packet[1] == 0);
@@ -131,7 +132,7 @@ int main() {
 
     packet[0] = 4;
     packet[1] = uart_id;    
-    packet[2] = (0x3 << 12) | 0x1 << 10 | 0x0;
+    packet[2] = (0x4) << 10 | 0x0;
     packet[3] = 0x3;
     packet[4] = 0x1 << 11 | 0x0;
 
@@ -148,7 +149,7 @@ int main() {
       assert(size_written == 8);
       assert(packet[0] == 3);
       assert(packet[1] == 0);
-      assert(packet[2] == 0x8002);
+      assert(packet[2] == 0x4402);
 
       printf("%c", (packet[3] & 0xff)); 
     }

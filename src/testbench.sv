@@ -25,7 +25,7 @@ module testbench
            );
 
    osd_scm
-     #(.SYSTEMID(16'hdead), .NUM_MOD(N-1))
+     #(.SYSTEMID(16'hdead), .NUM_MOD(N-1), .MAX_PKT_LEN(16))
    u_scm(.*,
          .id              ( 10'd1            ),
          .debug_in        ( dii_in[1]        ),
