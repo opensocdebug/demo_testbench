@@ -1,23 +1,11 @@
 
-interface dii_channel;
-   logic [15:0] data;
-   logic        first;
-   logic        last;
-   logic        valid;
-   logic        ready;
-   
-   modport master (output data,
-                   output first,
-                   output last,
-                   output valid,
-                   input  ready);
+package dii_package;
 
-   modport slave (input  data,
-                  input  first,
-                  input  last,
-                  input  valid,
-                  output ready);
-   
-endinterface // ddi_channel
+   typedef struct packed unsigned {
+      logic       valid;
+      logic       last;
+      logic [15:0] data;
+   } dii_flit;
 
+endpackage // dii_package
 
