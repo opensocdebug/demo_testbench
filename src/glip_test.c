@@ -1,4 +1,4 @@
-#include <libglip.h>
+#include <glip/libglip.h>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,6 +8,12 @@ int main() {
     int rv;
     struct glip_ctx *gctx;
 
+    /*    struct glip_option backend_options[] = {
+      { .name = "device", .value = "/dev/ttyUSB1" },
+      { .name = "speed", .value = "1000000" },
+    };
+    
+    rv = glip_new(&gctx, "uart", backend_options, 2);*/
     rv = glip_new(&gctx, "tcp", 0, 0);
     if (rv != 0) {
         printf("An error happened when creating the GLIP context.\n");
