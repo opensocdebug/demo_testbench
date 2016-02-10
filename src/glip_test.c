@@ -127,7 +127,34 @@ int main() {
 	printf("No UART found.\n");
 	exit (-1);
     }
-      
+
+    printf("Reset system\n");
+    packet[0] = 4;
+    packet[1] = 0x1;    
+    packet[2] = (0x4 << 10) | 0x0;
+    packet[3] = 0x203;
+    packet[4] = 0x3;
+    glip_write_b(gctx, 0, 10, (uint8_t*) packet, &size_written, 1*1000);
+
+    glip_read_b(gctx, 0, 6, (uint8_t*) packet, &size_written, 1*1000);
+    assert(size_written == 6);
+    assert(packet[0] == 2);
+    assert(packet[1] == 0);
+    assert(packet[2] == (1 << 11) | 0x1);
+
+    packet[0] = 4;
+    packet[1] = 0x1;    
+    packet[2] = (0x4 << 10) | 0x0;
+    packet[3] = 0x203;
+    packet[4] = 0x2;
+    glip_write_b(gctx, 0, 10, (uint8_t*) packet, &size_written, 1*1000);
+
+    glip_read_b(gctx, 0, 6, (uint8_t*) packet, &size_written, 1*1000);
+    assert(size_written == 6);
+    assert(packet[0] == 2);
+    assert(packet[1] == 0);
+    assert(packet[2] == (1 << 11) | 0x1);
+    
     printf("Ready. Enable UART\n");
 
     packet[0] = 4;
