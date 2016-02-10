@@ -24,6 +24,8 @@ module testbench
            .dii_in_ready   ( dii_in_ready[0]   )
            );
 
+   logic sys_rst, cpu_rst;
+
    osd_scm
      #(.SYSTEMID(16'hdead), .NUM_MOD(N-1), .MAX_PKT_LEN(16))
    u_scm(.*,
@@ -54,8 +56,8 @@ module testbench
    reg [4:0]   counter;
 
    always_ff @(posedge clk) begin
-      if (rst) begin
-         counter <= 0;
+      if (cpu_rst) begin
+         counter <= 5'h0;
       end else begin
          if ((w_valid & w_ready) |
              (ar_valid & ar_ready)) begin
