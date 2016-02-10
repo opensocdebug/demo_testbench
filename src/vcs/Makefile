@@ -23,7 +23,9 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/interconnect/verilog/ring_router_mux.sv \
            ${HARDWARE}/interconnect/verilog/ring_router_mux_rr.sv \
            ${HARDWARE}/blocks/buffer/verilog/dii_buffer.sv \
-           ${HARDWARE}/blocks/statctrlif/verilog/osd_statctrlif.sv \
+           ${HARDWARE}/blocks/regaccess/verilog/osd_regaccess.sv \
+           ${HARDWARE}/blocks/regaccess/verilog/osd_regaccess_demux.sv \
+           ${HARDWARE}/blocks/regaccess/verilog/osd_regaccess_layer.sv \
            ${HARDWARE}/modules/scm/verilog/osd_scm.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_nasti.sv \
