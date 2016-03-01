@@ -23,6 +23,7 @@ srcs_verilog = ../testbench_top.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_nasti.sv \
            ${HARDWARE}/modules/dem_uart/verilog/osd_dem_uart_16550.sv \
+           ${HARDWARE}/modules/mam/verilog/osd_mam.sv \
            ../testbench.sv \
 
 srcs_cxx = ../main.cpp \

@@ -9,7 +9,8 @@ module testbench
    glip_channel.master fifo_out
    );
 
-   localparam N = 3;
+   localparam N = 4;
+   localparam MAX_PKT_LEN = 16;
 
    dii_flit [N-1:0] dii_out; logic [N-1:0] dii_out_ready;
    dii_flit [N-1:0] dii_in; logic [N-1:0] dii_in_ready;   
@@ -27,7 +28,7 @@ module testbench
    logic sys_rst, cpu_rst;
 
    osd_scm
-     #(.SYSTEMID(16'hdead), .NUM_MOD(N-1), .MAX_PKT_LEN(16))
+     #(.SYSTEMID(16'hdead), .NUM_MOD(N-1), .MAX_PKT_LEN(MAX_PKT_LEN))
    u_scm(.*,
          .id              ( 10'd1            ),
          .debug_in        ( dii_in[1]        ),
@@ -133,6 +134,36 @@ module testbench
              .debug_out       ( dii_out[2]       ),
              .debug_out_ready ( dii_out_ready[2] )
              );
+
+   logic                                  req_valid;
+   logic                                  req_ready;
+   logic                                  req_rw;
+   logic [30:0]                           req_addr;
+   logic                                  req_burst;
+   logic [15:0]                           req_size;
+
+   logic                                  write_valid;
+   logic [511:0]                          write_data;
+   logic [63:0]                           write_strb;   
+   logic                                  write_ready;
+   
+   logic                                  read_valid;
+   logic [511:0]                          read_data;
+   logic                                  read_ready;
+
+   assign req_ready = 1;
+   assign write_ready = 1;
+   
+   osd_mam
+     #(.DATA_WIDTH(512), .BASE_ADDR(0), .MEM_SIZE(1024*1024*1024),
+       .ADDR_WIDTH(32), .MAX_PKT_LEN(MAX_PKT_LEN))
+   u_mam (.*,
+          .id (10'd3),
+          .debug_in        ( dii_in[3]        ),
+          .debug_in_ready  ( dii_in_ready[3]  ),
+          .debug_out       ( dii_out[3]       ),
+          .debug_out_ready ( dii_out_ready[3] )
+          );
 
    debug_ring
      #(.PORTS(N))
